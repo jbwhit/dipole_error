@@ -1,0 +1,66 @@
+# Documentation notes: 
+
+make html
+make latex
+
+# where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
+
+MyModule/
+--README
+--doc
+--multi
+  --__init__.py
+  --myclass.py
+--single.py
+--script1
+
+
+
+
+
+
+get nose and coverage
+
+nosetests --verbose --with-coverage test/test1.py
+
+
+
+Jenkins:
+# navigate to: 
+# http://localhost:8080/
+# sudo launchctl unload /Library/LaunchDaemons/org.jenkins-ci.plist
+
+Violations 
+  pylint
+  Clone Digger
+
+SLOCCount
+  Sloccount
+
+xUnit
+  Unit tests
+  
+Cobertura
+  Coverage
+  
+
+install: 
+git plugin
+git parameter plugin
+Cobertura
+Violations
+SLOCCount
+xUnit
+
+
+
+===================
+SourceTree
+File > New > Create Repository 
+github/new_repo_name
+double click -- git flow setup
+
+Jenkins
+
+Build a free-style software project
+
