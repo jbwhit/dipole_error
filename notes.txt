@@ -57,10 +57,16 @@ xUnit
 ===================
 SourceTree
 File > New > Create Repository 
-github/new_repo_name
+location/new_repo_name
 double click -- git flow setup
 
-Jenkins
+github
+create new repo
+git remote add origin https://github.com/jbwhit/dipole_error.git
+git push -u origin master
 
+
+Jenkins
+Job name: 
 Build a free-style software project
 
