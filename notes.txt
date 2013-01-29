@@ -82,3 +82,26 @@ sloccount --duplicates --wide --details . > sloccount.sc || :
 
 find -H . -name 'test*.py'|xargs nosetests --with-xunit --verbose --with-xcoverage || : 
 nosetests.xml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

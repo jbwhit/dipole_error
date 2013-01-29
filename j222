@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+"""Calculate value of dipole and associated uncertainty."""
+
+import calculation
+import angles
+import numpy as np
+# raw_input("Which model would you like to test?")
+
+# # King et al. (2012) dipole location
+# DIPOLE_RA = 17.3
+# DIPOLE_DEC = -61.0
+
+# A possible sky position in RA and DEC
+# QSO J2220-2803 -- Quasar
+# http://simbad.u-strasbg.fr/simbad/sim-basic?Ident=QSO+J2220-2803&submit=SIMBAD+search
+# FK5 coord. (ep=J2000 eq=2000) :     22 20 06.757 -28 03 23.34 ( Optical ) [ ~ ~ ~ ] B 2009A&A...505..385A
+# FK5 coord. (ep=J2000 eq=2000) :    335.028153 -28.056483 ( Optical ) [ ~ ~ ~ ] B 2009A&A...505..385A
+DEFAULT_RA = "22h20m06.757" # RA
+DEFAULT_DEC = "-28d03m23.34" # DEC 
+
+
+QSO_POSITION = angles.AngularPosition(alpha=DEFAULT_RA, delta=DEFAULT_DEC)
+# print QSO_POSITION
+# print angles.r2d(QSO_POSITION.sep(DIPOLE)), 'degrees'
+# print np.radians(angles.r2d(QSO_POSITION.sep(DIPOLE))), 'radians'
+
+print calculation.theta(DEFAULT_RA, DEFAULT_DEC)
+print calculation.theta(DEFAULT_RA, DEFAULT_DEC, 17.3, -61.0)
+print calculation.theta(17.3, -61.0, DEFAULT_RA, DEFAULT_DEC)
+
+# QSO_RA = raw_input("Position RA (ex. 17.3): ")
+# QSO_DEC = raw_input("Position DEC (ex. -28.03): ")
+# if not QSO_RA:
+#     QSO_RA = DEFAULT_RA
+# else:
+#     QSO_RA = float(QSO_RA)
+# if not QSO_DEC:
+#     QSO_DEC = DEFAULT_DEC
+# else: 
+#     QSO_DEC = float(QSO_DEC)
+# 
+# print QSO_RA, QSO_DEC
+# 
+# print calculation.sky_position(QSO_RA, QSO_DEC)
+
+# qso = angles.AngularPosition(alpha=22.20, delta=-28.03)
+# measured_da_a = -1.0904e-6
+# da_a_stat_error = 2.35e-6
+# da_a_sys_error = 1.6549e-6
+# 
+# raw
