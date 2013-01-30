@@ -5,12 +5,19 @@ import calculation
 import uncertainties
 import unittest
 
-# class ThetaTest(unittest.TestCase):
-#     """docstring for ThetaTest"""
-#     def __init__(self, arg):
-#         super(ThetaTest, self).__init__()
-#         self.arg = arg
-#         
+class SkyPositionTest(unittest.TestCase):
+    """docstring """
+    def __init__(self, arg):
+        self.arg = arg
+    
+    def test_wrap_works_simple(self):
+        """docstring for test_wrap_works_simple"""
+        DIP_RA = 17.3
+        DIP_RA_ERR = 1.0
+        DIP_DEC = -61.0
+        DIP_DEC_ERR = 10.0        
+        self.assertEqual(calculation.sky_position(DIP_RA, DIP_DEC), calculation.wrapped_sky_position(DIP_RA, DIP_DEC))
+
 # class MonteCarloTest(unittest.TestCase):
 #     """docstring for MonteCarloTest"""
 #     def __init__(self, arg):

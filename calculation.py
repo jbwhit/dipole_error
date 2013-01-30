@@ -28,7 +28,7 @@ def sky_position(right_ascension, declination):
     """docstring for qso_position"""
     return angles.AngularPosition(alpha=right_ascension, delta=declination)
 
-# wrapped_sky_position = uncertainties.wrap(sky_position)
+wrapped_sky_position = uncertainties.wrap(sky_position)
 
 # QSO_POSITION = sky_position(QSO_RA, QSO_DEC)
 # DIPOLE_POSITION = sky_position(DIP_RA, DIP_DEC)
