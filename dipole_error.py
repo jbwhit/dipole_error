@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Calculates the expected $\Delta \alpha/\alpha$ from the King, et al. (2012) and error estimate. Section 5.3."""
 import angles
-import numpy as np
 import uncertainties
 from uncertainties.umath import *
 
