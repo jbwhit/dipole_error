@@ -1,45 +1,67 @@
 #!/usr/bin/env python
-"""Calculates the expected $\Delta \alpha/\alpha$ from the King, et al. (2012) and error estimate. Section 5.3."""
-import angles
-import numpy as np
+"""Example of dipole_error usage"""
 import uncertainties
-from dipole_error import *
+import dipole_error
 
-# King et al. (2012) dipole location
+
+QSO_RA = "22h20m06.757" # RA
+QSO_DEC = "-28d03m23.34" # DEC
+THETA = 1.02 # radians
+REDSHIFT = 1.5 # Just pick a redshift to start
+RADIAL_DISTANCE = 1.3 # GLyr
+
 DIP_RA = 17.3
 DIP_RA_ERR = 1.0
 DIP_DEC = -61.0
 DIP_DEC_ERR = 10.0
+DIP_AMPLITUDE = 0.97e-5
+DIP_AMPLITUDE_ERR = 0.21e-5 # average of asymmetric errors
+DIP_MONOPOLE = -0.178e-5
+DIP_MONOPOLE_ERR  = 0.084e-5
 
+# Values and errors combined for uncertainties package.
+DIPOLE_AMPLITUDE = uncertainties.ufloat((DIP_AMPLITUDE, DIP_AMPLITUDE_ERR))
+MONOPOLE = uncertainties.ufloat((DIP_MONOPOLE, DIP_MONOPOLE_ERR))
 DIPOLE_RA = uncertainties.ufloat((DIP_RA, DIP_RA_ERR))
 DIPOLE_DEC = uncertainties.ufloat((DIP_DEC, DIP_DEC_ERR))
 
-QSO_RA = "22h20m06.757" # RA
-QSO_DEC = "-28d03m23.34" # DEC
-# QSO_decimal_RA = 335.028153 
-# QSO_decimal_DEC = -28.056483
-QSO_decimal_RA = 335.028153 
-QSO_decimal_DEC = -28.056483
-DIP_decimal_RA = angles.h2d(DIP_RA)
-DIP_decimal_DEC = angles.h2d(DIP_DEC)
+print "Default: "
+print dipole_error.dipole_monopole()
 
-z_dipole_monopole(right_ascension=QSO_RA, declination=QSO_DEC, dipole_ra=Z_DIPOLE_RA, dipole_dec=Z_DIPOLE_DEC, prefactor=Z_DIPOLE_PREFACTOR, z_redshift=REDSHIFT, beta=Z_DIPOLE_BETA, monopole=Z_DIPOLE_MONOPOLE)
+print
+print "Different RA values: "
+for ra_value in ["12h20m06.757", 17.2, "17h12m"]:
+    print "RA:", ra_value, "\n  da/a:", dipole_error.dipole_monopole(right_ascension=ra_value, \
+                        declination=QSO_DEC, \
+                        dipole_ra=DIPOLE_RA, \
+                        dipole_dec=DIPOLE_DEC, \
+                        amplitude=DIPOLE_AMPLITUDE, \
+                        monopole=MONOPOLE)
+                    
+print 
+print "Different DEC values: "
+for dec_value in ["-28d03m23.34", "-61d03m", 15.0]:
+    print "DEC:", dec_value, "\n  da/a:", \
+          dipole_error.dipole_monopole(right_ascension=QSO_RA, \
+                        declination=dec_value, \
+                        dipole_ra=DIPOLE_RA, \
+                        dipole_dec=DIPOLE_DEC, \
+                        amplitude=DIPOLE_AMPLITUDE, \
+                        monopole=MONOPOLE)
+
+print
+print "Different Amplitude/error values: "
+for amplitude_error in [0.1e-5, 2.0e-5]:
+    print "Amplitude error:", amplitude_error, "\n  da/a:", \
+    dipole_error.dipole_monopole(right_ascension=QSO_RA, \
+                  declination=dec_value, \
+                  dipole_ra=DIPOLE_RA, \
+                  dipole_dec=DIPOLE_DEC, \
+                  amplitude=uncertainties.ufloat((DIP_AMPLITUDE, amplitude_error)), \
+                  monopole=MONOPOLE)
+        
 
 
-
-# np.degrees(jw_sep(QSO_decimal_RA, QSO_decimal_DEC, DIP_decimal_RA, DIP_decimal_DEC)) # 58.032267492266556
-
-# def sky_position(right_ascension, declination):
-#     """docstring for qso_position"""
-#     return angles.AngularPosition(alpha=right_ascension, delta=declination)
-# 
-# wrapped_sky_position = uncertainties.wrap(sky_position)
-
-# QSO_POSITION = sky_position(QSO_RA, QSO_DEC)
-# DIPOLE_POSITION = sky_position(DIP_RA, DIP_DEC)
-# # print "QSO_POSITION: ", QSO_POSITION
-# # print "DIPOLE_POSITION: ", sky_position(DIP_RA, DIP_DEC)
-# 
 # def monte_carlo(value, error):
 #     """Return a random value around value +/- error"""
 #     if error == 0:

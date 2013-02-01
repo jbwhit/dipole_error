@@ -1,8 +1,23 @@
 #!/usr/bin/env python
-"""Calculates the expected $\Delta \alpha/\alpha$ from the King, et al. (2012) and error estimate. Section 5.3."""
-import angles
-import uncertainties
-from uncertainties.umath import *
+"""Calculates the expected $\Delta \alpha/\alpha$ from the King, et al. (2012) and error estimate. Section 5.3.
+
+King, J.A., Webb, J.K., Murphy, M.T., Flambaum, V.V., Carswell, R.F., Bainbridge, M.B., Wilczynska, M.R., Koch, F.E., 
+Spatial variation in the fine-structure constant - new results from VLT/UVES, 
+Monthly Notices of the Royal Astronomical Society, 422, 3370-3414. (2012)
+"""
+try:
+    import angles
+except:
+    print """python package ''angles'' is required. Try running: 
+    $ sudo pip install -U angles"""
+    raise 
+try:
+    import uncertainties
+except:
+    print """python package ''uncertainties'' is required. Try running: 
+    $ sudo pip install -U uncertainties"""
+    raise 
+from uncertainties import umath
 
 # Define exceptions
 class DipoleError(Exception): 
@@ -58,7 +73,7 @@ def basic_dipole_monopole(amplitude=DIP_AMPLITUDE, \
     :returns: value of predicted dipole at a theta radians away from dipole.
     :rtype: number
     """
-    return amplitude * uncertainties.umath.cos(theta) + monopole
+    return amplitude * umath.cos(theta) + monopole
 
 wrap_dipole_monopole = uncertainties.wrap(basic_dipole_monopole)
 
@@ -84,10 +99,14 @@ def dipole_monopole(right_ascension=QSO_RA, \
     :type amplitude: uncertainties.AffineScalarFunc
     :param monopole: Monopole term (optional with uncertainty via uncertainties.ufloat((value, error)) ).
     :type monopole: uncertainties.AffineScalarFunc
+    returns
     """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
     return wrap_dipole_monopole(amplitude, \
-                                wrap_sep(wrap_radian_RA(dipole_ra), wrap_radian_DEC(dipole_dec), pos1.alpha.r, pos1.delta.r), \
+                                wrap_sep(wrap_radian_RA(dipole_ra), \
+                                         wrap_radian_DEC(dipole_dec), \
+                                         pos1.alpha.r, \
+                                         pos1.delta.r), \
                                 monopole)
 
 # ======================
@@ -119,8 +138,22 @@ def basic_z_dipole_monopole(prefactor=Z_DIP_PREFACTOR, \
                             monopole=Z_DIP_MONOPOLE,\
                             *args,\
                             **kwargs):
-    """docstring for basic_z_dipole_monopole"""
-    return prefactor * z_redshift ** beta * uncertainties.umath.cos(theta) + monopole
+    """
+    Arguments:
+    :param prefactor: Amplitude of dipole.
+    :type prefactor: number
+    :param z_redshift: Redshift of absorber in sky.
+    :type z_redshift: number
+    :param beta: power law exponent.
+    :type beta: number
+    :param theta: angle in radians between the dipole and a positions on the sky.
+    :type theta: number
+    :param monopole: monopole term.
+    :type monopole: number
+    :returns: value of predicted dipole at a theta radians away from dipole.
+    :rtype: number
+    """
+    return prefactor * z_redshift ** beta * umath.cos(theta) + monopole
 
 wrap_z_dipole_monopole = uncertainties.wrap(basic_z_dipole_monopole)
 
@@ -132,13 +165,32 @@ def z_dipole_monopole(right_ascension=QSO_RA, \
                       z_redshift=REDSHIFT, \
                       beta=Z_DIP_BETA, \
                       monopole=Z_DIP_MONOPOLE):
-    """docstring for z_dipole_monopole"""
+    """Returns the predicted value of alpha from the z_dipole equation.
+    
+    Arguments:
+    :param right_ascension:right ascension of point in sky under consideration. 
+    :type right_ascension: number
+    :param declination: declination of point in sky under consideration.
+    :type declination: number
+    :param dipole_ra: RA of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type dipole_ra: uncertainties.AffineScalarFunc
+    :param dipole_dec: DEC of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type dipole_dec: uncertainties.AffineScalarFunc
+    :param prefactor: Prefactor term of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type prefactor: uncertainties.AffineScalarFunc
+    
+    :param monopole: Monopole term (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type monopole: uncertainties.AffineScalarFunc
+    returns
+    """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
     return wrap_z_dipole_monopole(prefactor, \
                                   z_redshift, \
                                   beta, \
-                                  wrap_sep(wrap_radian_RA(dipole_ra), wrap_radian_DEC(dipole_dec), \
-                                           pos1.alpha.r, pos1.delta.r), \
+                                  wrap_sep(wrap_radian_RA(dipole_ra), \
+                                           wrap_radian_DEC(dipole_dec), \
+                                           pos1.alpha.r, \
+                                           pos1.delta.r), \
                                   monopole)
 
 # ======================
@@ -167,8 +219,19 @@ def basic_r_dipole_monopole(amplitude=R_DIPOLE_AMPLITUDE,\
                             monopole=R_DIPOLE_MONOPOLE,\
                             *args,\
                             **kwargs):
-    """docstring for basic_r_dipole_monopole"""
-    return amplitude * radial_distance * uncertainties.umath.cos(theta) + monopole
+    """
+    
+    Arguments:
+    :param amplitude: Amplitude term of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type amplitude: number
+    :param radial_distance: Radial distance in GLyr
+    :type radial_distance: number
+    :type theta: number
+    :param monopole: monopole term.
+    :type monopole: number
+    returns
+    """
+    return amplitude * radial_distance * umath.cos(theta) + monopole
 
 wrap_r_dipole_monopole = uncertainties.wrap(basic_r_dipole_monopole)
 
@@ -179,12 +242,32 @@ def r_dipole_monopole(right_ascension=QSO_RA, \
                       amplitude=R_DIPOLE_AMPLITUDE, \
                       radial_distance=RADIAL_DISTANCE, \
                       monopole=R_DIPOLE_MONOPOLE):
-    """docstring for r_dipole_monopole"""
+    """docstring for r_dipole_monopole
+    
+    Arguments:
+    :param right_ascension:right ascension of point in sky under consideration. 
+    :type right_ascension: number
+    :param declination: declination of point in sky under consideration.
+    :type declination: number
+    :param dipole_ra: RA of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type dipole_ra: uncertainties.AffineScalarFunc
+    :param dipole_dec: DEC of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type dipole_dec: uncertainties.AffineScalarFunc
+    :param amplitude: Amplitude term of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type amplitude: uncertainties.AffineScalarFunc
+    :param radial_distance: Radial distance in GLyr
+    :type radial_distance: uncertainties.AffineScalarFunc
+    :param monopole: Monopole term (optional with uncertainty via uncertainties.ufloat((value, error)) ).
+    :type monopole: uncertainties.AffineScalarFunc
+    returns
+    """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
     return wrap_r_dipole_monopole(amplitude, \
                                   radial_distance, \
-                                  wrap_sep(wrap_radian_RA(dipole_ra), wrap_radian_DEC(dipole_dec), \
-                                           pos1.alpha.r, pos1.delta.r), \
+                                  wrap_sep(wrap_radian_RA(dipole_ra), \
+                                           wrap_radian_DEC(dipole_dec), \
+                                           pos1.alpha.r, \
+                                           pos1.delta.r), \
                                   monopole)
 
 
