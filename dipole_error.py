@@ -4,6 +4,8 @@
 King, J.A., Webb, J.K., Murphy, M.T., Flambaum, V.V., Carswell, R.F., Bainbridge, M.B., Wilczynska, M.R., Koch, F.E., 
 Spatial variation in the fine-structure constant - new results from VLT/UVES, 
 Monthly Notices of the Royal Astronomical Society, 422, 3370-3414. (2012)
+
+Requires the use of two very handy python packages: angles and uncertainties.
 """
 try:
     import angles
