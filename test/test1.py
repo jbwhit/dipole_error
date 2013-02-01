@@ -16,7 +16,7 @@ DIPOLE_DEC = uncertainties.ufloat((DIP_DEC, DIP_DEC_ERR))
 class SkyPositionTest(unittest.TestCase):
     """docstring """
     
-    
+    # test angles.r correctly find separation between known RA and DECs
     # 
     # def test_wrap_works_simple(self):
     #     """docstring for test_wrap_works_simple"""
