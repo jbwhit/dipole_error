@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+<duplication lines="105" tokens="622">
+<file line="15" path="/Users/jwhitmore/github/dipole_error/starting_file.py"/>
+<file line="7" path="/Users/jwhitmore/github/dipole_error/calculation.py"/>
+<codefragment>
+<![CDATA[
+dipole = angles.AngularPosition(alpha=17.3, delta=-61)
+dipole_p_ra_p_dec = angles.AngularPosition(alpha=18.3, delta=-51)
+dipole_p_ra_m_dec = angles.AngularPosition(alpha=18.3, delta=-71)
+dipole_m_ra_p_dec = angles.AngularPosition(alpha=16.3, delta=-51)
+dipole_m_ra_m_dec = angles.AngularPosition(alpha=16.3, delta=-71)
+qso = angles.AngularPosition(alpha=22.20, delta=-28.03)
+measured_da_a = -1.0904e-6
+da_a_stat_error = 2.35e-6
+da_a_sys_error = 1.6549e-6
+def predicted_alpha(A, theta, m):
+    """Returns the predicted value of da/a as given by eq. 15 in King et al. 2012
+        theta is in radians."""
+    return A * np.cos(theta) + m
+def sigma(theta):
+    """Return the error for a given theta"""
+    return np.sqrt((da_a / A)**2 * sigma_A**2 + (da_a / np.cos(theta))**2 * sigma_cos**2)
+positions = []
+positions.append(np.radians(angles.r2d(qso.sep(dipole)))) # positions[0] is predicted value
+positions.append(np.radians(angles.r2d(qso.sep(dipole_p_ra_p_dec))))
+positions.append(np.radians(angles.r2d(qso.sep(dipole_p_ra_m_dec))))
+positions.append(np.radians(angles.r2d(qso.sep(dipole_m_ra_p_dec))))
+positions.append(np.radians(angles.r2d(qso.sep(dipole_m_ra_m_dec))))
+A = 0.97e-5
+A_prefactors = []
+A_prefactors.append(A) # A_prefactos[0] is predicted value
+A_prefactors.append(A + 0.22e-5)
+A_prefactors.append(A - 0.20e-5)
+m = -0.178e-5
+m_values = []
+m_values.append(m) # m_values[0] is predicted value
+m_values.append(m - 0.084e-5)
+m_values.append(m + 0.084e-5)
+alpha_values = []
+for A in A_prefactors:
+    for m in m_values:
+        for position in positions:
+            alpha_values.append(predicted_alpha(A, position, m))
+predicted_alpha_value = predicted_alpha(A_prefactors[0], positions[0], m_values[0])
+print predicted_alpha_value, np.max(alpha_values), np.min(alpha_values)
+errors = []
+errors.append(np.max(alpha_values) - predicted_alpha_value)
+errors.append(predicted_alpha_value - np.min(alpha_values))
+predicted_error = np.average(errors)
+print predicted_alpha_value, predicted_error
+print "Separation angle between dipole and qso: ", round(np.degrees(positions[0]), 3), \
+    "degrees or", round(positions[0], 5), "radians."
+print "Predicted da/a: ", round(predicted_alpha_value, 10)
+print "Error: ", round(predicted_error, 10)
+print "Measured da/a: ", round(measured_da_a, 10)
+print "Statistical error: ", round(da_a_stat_error, 10)
+print "Systematic error: ", round(da_a_sys_error, 10)
+total_error = np.sqrt(predicted_error ** 2 + da_a_stat_error ** 2)
+print "Total statistical error (in quad): ", round(total_error, 10)
+best_difference = np.abs(predicted_alpha_value - measured_da_a) - da_a_sys_error
+worst_difference = np.abs(predicted_alpha_value - measured_da_a) + da_a_sys_error
+if best_difference < 0:
+    # If true
+    print "Within systematic error"
+else:
+    print "Best sigmas away: ", round(best_difference / total_error, 2)
+    print "Worst sigmas away: ", round(worst_difference / total_error, 2)
+qso_total_error = np.sqrt(da_a_stat_error ** 2 + da_a_sys_error ** 2)
+print qso_total_error
+print np.sqrt(qso_total_error ** 2 + predicted_error ** 2)
+np.sqrt(1.1 ** 2 + 1.4 ** 2)
+ra_0 = 17.3
+ra_err = 1.0
+dec_0 = -61.0
+dec_err = 10.0
+A_0 = 0.97e-5
+A_err = 0.21e-5 # average of upper and lower errors
+m_0 = -0.178e-5
+m_err = 0.084e-5
+def monte_carlo(value, error):
+    """Return a random value around value +/- error"""
+    return np.random.normal(value, error)
+def monte_carlo_angle():
+    return np.radians(angles.r2d(qso.sep(angles.AngularPosition(alpha=monte_carlo(ra_0, ra_err), delta=monte_carlo(dec_0, dec_err)))))
+predicted_alpha(monte_carlo(A_0, A_err), monte_carlo_angle(), monte_carlo(m_0, m_err))
+alpha_mc = [predicted_alpha(monte_carlo(A_0, A_err), monte_carlo_angle(), monte_carlo(m_0, m_err)) for x in range(100000)]
+print np.average(alpha_mc), np.std(alpha_mc)
+print predicted_alpha(A_0, positions[0], m_0)
+print np.degrees(positions[0])
+print np.degrees(np.radians(angles.r2d(qso.sep(angles.AngularPosition(alpha=ra_0, delta=dec_0)))))
+print predicted_alpha(A_0, np.degrees(np.radians(angles.r2d(qso.sep(angles.AngularPosition(alpha=A_0, delta=dec_0))))), m_0)
+print "Separation angle between dipole and qso: ", round(np.degrees(positions[0]), 3), \
+    "degrees or", round(positions[0], 5), "radians."
+predicted_alpha_value = predicted_alpha(A_prefactors[0], positions[0], m_values[0])
+monte_carlo_alpha = np.average(alpha_mc)
+monte_carlo_error = np.std(alpha_mc)
+print "Predicted da/a: ", round(predicted_alpha_value, 10)
+print "Monte Carlo da/a: ", round(monte_carlo_alpha, 10)
+print "Monte Carlo error: ", round(monte_carlo_error, 10)
+print "Measured da/a: ", round(measured_da_a, 10)
+print "Statistical error: ", round(da_a_stat_error, 10)
+print "Systematic error: ", round(da_a_sys_error, 10)
+total_error = np.sqrt(monte_carlo_error ** 2 + da_a_stat_error ** 2)
+print "Total statistical error (in quad): ", round(total_error, 10)
+best_difference = np.abs(predicted_alpha_value - measured_da_a) - da_a_sys_error
+worst_difference = np.abs(predicted_alpha_value - measured_da_a) + da_a_sys_error
+if best_difference < 0:
+    # If true
+    print "Within systematic error"
+else:
+    print "Best sigmas away: ", round(best_difference / total_error, 2)
+    print "Worst sigmas away: ", round(worst_difference / total_error, 2)
+qso_total_error = np.sqrt(da_a_stat_error ** 2 + da_a_sys_error ** 2)
+print qso_total_error
+print np.sqrt(qso_total_error ** 2 + monte_carlo_error ** 2)
+cospositions = [np.cos(x) for x in positions]
+cosposition_err = np.max(cospositions) - np.min(cospositions)
+np.sqrt(np.cos(positions[0])**2 * A_err**2 + A**2 * cosposition_err**2 + 1**2 * m_err**2)
+np.sqrt(np.cos(positions[0])**2 * A_err**2 + A_0**2 * (cosposition_err/2)**2 + 1**2 * m_err**2)
+]]>
+</codefragment>
+</duplication>
+<duplication lines="16" tokens="76">
+<file line="235" path="/Users/jwhitmore/github/dipole_error/starting_file.py"/>
+<file line="110" path="/Users/jwhitmore/github/dipole_error/starting_file.py"/>
+<codefragment>
+<![CDATA[
+print "Monte Carlo da/a: ", round(monte_carlo_alpha, 10)
+print "Monte Carlo error: ", round(monte_carlo_error, 10)
+print "Measured da/a: ", round(measured_da_a, 10)
+print "Statistical error: ", round(da_a_stat_error, 10)
+print "Systematic error: ", round(da_a_sys_error, 10)
+total_error = np.sqrt(monte_carlo_error ** 2 + da_a_stat_error ** 2)
+print "Total statistical error (in quad): ", round(total_error, 10)
+best_difference = np.abs(predicted_alpha_value - measured_da_a) - da_a_sys_error
+worst_difference = np.abs(predicted_alpha_value - measured_da_a) + da_a_sys_error
+if best_difference < 0:
+    # If true
+    print "Within systematic error"
+else:
+    print "Best sigmas away: ", round(best_difference / total_error, 2)
+    print "Worst sigmas away: ", round(worst_difference / total_error, 2)
+qso_total_error = np.sqrt(da_a_stat_error ** 2 + da_a_sys_error ** 2)
+print qso_total_error
+print np.sqrt(qso_total_error ** 2 + monte_carlo_error ** 2)
+]]>
+</codefragment>
+</duplication>
+<duplication lines="16" tokens="76">
+<file line="235" path="/Users/jwhitmore/github/dipole_error/starting_file.py"/>
+<file line="102" path="/Users/jwhitmore/github/dipole_error/calculation.py"/>
+<codefragment>
+<![CDATA[
+print "Monte Carlo da/a: ", round(monte_carlo_alpha, 10)
+print "Monte Carlo error: ", round(monte_carlo_error, 10)
+print "Measured da/a: ", round(measured_da_a, 10)
+print "Statistical error: ", round(da_a_stat_error, 10)
+print "Systematic error: ", round(da_a_sys_error, 10)
+total_error = np.sqrt(monte_carlo_error ** 2 + da_a_stat_error ** 2)
+print "Total statistical error (in quad): ", round(total_error, 10)
+best_difference = np.abs(predicted_alpha_value - measured_da_a) - da_a_sys_error
+worst_difference = np.abs(predicted_alpha_value - measured_da_a) + da_a_sys_error
+if best_difference < 0:
+    # If true
+    print "Within systematic error"
+else:
+    print "Best sigmas away: ", round(best_difference / total_error, 2)
+    print "Worst sigmas away: ", round(worst_difference / total_error, 2)
+qso_total_error = np.sqrt(da_a_stat_error ** 2 + da_a_sys_error ** 2)
+print qso_total_error
+print np.sqrt(qso_total_error ** 2 + monte_carlo_error ** 2)
+]]>
+</codefragment>
+</duplication>
+<duplication lines="16" tokens="76">
+<file line="220" path="/Users/jwhitmore/github/dipole_error/calculation.py"/>
+<file line="110" path="/Users/jwhitmore/github/dipole_error/starting_file.py"/>
+<codefragment>
+<![CDATA[
+print "Monte Carlo da/a: ", round(monte_carlo_alpha, 10)
+print "Monte Carlo error: ", round(monte_carlo_error, 10)
+print "Measured da/a: ", round(measured_da_a, 10)
+print "Statistical error: ", round(da_a_stat_error, 10)
+print "Systematic error: ", round(da_a_sys_error, 10)
+total_error = np.sqrt(monte_carlo_error ** 2 + da_a_stat_error ** 2)
+print "Total statistical error (in quad): ", round(total_error, 10)
+best_difference = np.abs(predicted_alpha_value - measured_da_a) - da_a_sys_error
+worst_difference = np.abs(predicted_alpha_value - measured_da_a) + da_a_sys_error
+if best_difference < 0:
+    # If true
+    print "Within systematic error"
+else:
+    print "Best sigmas away: ", round(best_difference / total_error, 2)
+    print "Worst sigmas away: ", round(worst_difference / total_error, 2)
+qso_total_error = np.sqrt(da_a_stat_error ** 2 + da_a_sys_error ** 2)
+print qso_total_error
+print np.sqrt(qso_total_error ** 2 + monte_carlo_error ** 2)
+]]>
+</codefragment>
+</duplication>
+<duplication lines="16" tokens="76">
+<file line="220" path="/Users/jwhitmore/github/dipole_error/calculation.py"/>
+<file line="102" path="/Users/jwhitmore/github/dipole_error/calculation.py"/>
+<codefragment>
+<![CDATA[
+print "Monte Carlo da/a: ", round(monte_carlo_alpha, 10)
+print "Monte Carlo error: ", round(monte_carlo_error, 10)
+print "Measured da/a: ", round(measured_da_a, 10)
+print "Statistical error: ", round(da_a_stat_error, 10)
+print "Systematic error: ", round(da_a_sys_error, 10)
+total_error = np.sqrt(monte_carlo_error ** 2 + da_a_stat_error ** 2)
+print "Total statistical error (in quad): ", round(total_error, 10)
+best_difference = np.abs(predicted_alpha_value - measured_da_a) - da_a_sys_error
+worst_difference = np.abs(predicted_alpha_value - measured_da_a) + da_a_sys_error
+if best_difference < 0:
+    # If true
+    print "Within systematic error"
+else:
+    print "Best sigmas away: ", round(best_difference / total_error, 2)
+    print "Worst sigmas away: ", round(worst_difference / total_error, 2)
+qso_total_error = np.sqrt(da_a_stat_error ** 2 + da_a_sys_error ** 2)
+print qso_total_error
+print np.sqrt(qso_total_error ** 2 + monte_carlo_error ** 2)
+]]>
+</codefragment>
+</duplication>
+</pmd-cpd>
