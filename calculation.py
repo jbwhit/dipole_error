@@ -3,6 +3,7 @@
 import angles
 import numpy as np
 import uncertainties
+from dipole_error import *
 
 # King et al. (2012) dipole location
 DIP_RA = 17.3
@@ -22,13 +23,17 @@ QSO_decimal_DEC = -28.056483
 DIP_decimal_RA = angles.h2d(DIP_RA)
 DIP_decimal_DEC = angles.h2d(DIP_DEC)
 
+z_dipole_monopole(right_ascension=QSO_RA, declination=QSO_DEC, dipole_ra=Z_DIPOLE_RA, dipole_dec=Z_DIPOLE_DEC, prefactor=Z_DIPOLE_PREFACTOR, z_redshift=REDSHIFT, beta=Z_DIPOLE_BETA, monopole=Z_DIPOLE_MONOPOLE)
+
+
+
 # np.degrees(jw_sep(QSO_decimal_RA, QSO_decimal_DEC, DIP_decimal_RA, DIP_decimal_DEC)) # 58.032267492266556
 
-def sky_position(right_ascension, declination):
-    """docstring for qso_position"""
-    return angles.AngularPosition(alpha=right_ascension, delta=declination)
-
-wrapped_sky_position = uncertainties.wrap(sky_position)
+# def sky_position(right_ascension, declination):
+#     """docstring for qso_position"""
+#     return angles.AngularPosition(alpha=right_ascension, delta=declination)
+# 
+# wrapped_sky_position = uncertainties.wrap(sky_position)
 
 # QSO_POSITION = sky_position(QSO_RA, QSO_DEC)
 # DIPOLE_POSITION = sky_position(DIP_RA, DIP_DEC)
@@ -92,47 +97,6 @@ wrapped_sky_position = uncertainties.wrap(sky_position)
 # # print "Test 5b:", theta3(DIPOLE_RA.nominal_value, DIPOLE_DEC.nominal_value, QSO_RA, QSO_DEC)
 # # print "Test 5c:", uncertainty_theta3(DIPOLE_RA, DIPOLE_DEC, QSO_RA, QSO_DEC)
 # 
-# A_0 = 0.97e-5
-# A_ERR = 0.21e-5 # average of asymmetric errors
-# AMPLITUDE = uncertainties.ufloat((A_0, A_ERR))
-# 
-# M_0 = -0.178e-5
-# M_ERR  = 0.084e-5
-# MONOPOLE = uncertainties.ufloat((M_0, M_ERR))
-# 
-# def dipole_monopole(amplitude=AMPLITUDE, theta=uncertainty_theta(DIPOLE_RA.nominal_value, DIPOLE_DEC.nominal_value, qso=QSO_POSITION), monopole=MONOPOLE, *args, **kwargs):
-#     """Returns the predicted value of da/a as given by eq. 15 in King et al. 2012.
-#     
-#     Arguments:
-#     :param amplitude: Amplitude of dipole.
-#     :type amplitude: number
-#     :param theta: angle in radians between two positions considered on sky.
-#     :type theta: number
-#     :param monopole: monopole term.
-#     :type monopole: number
-#     :returns: value of predicted dipole at a theta radians away from dipole.
-#     :rtype: number
-#     """
-#     return amplitude * np.cos(theta) + monopole
-# 
-# def dipole_monopole2(amplitude=AMPLITUDE, theta=uncertainty_theta(DIPOLE_RA.nominal_value, DIPOLE_DEC.nominal_value, qso=QSO_POSITION), monopole=MONOPOLE, *args, **kwargs):
-#     """Returns the predicted value of da/a as given by eq. 15 in King et al. 2012.
-# 
-#     Arguments:
-#     :param amplitude: Amplitude of dipole.
-#     :type amplitude: number
-#     :param theta: angle in radians between two positions considered on sky.
-#     :type theta: number
-#     :param monopole: monopole term.
-#     :type monopole: number
-#     :returns: value of predicted dipole at a theta radians away from dipole.
-#     :rtype: number
-#     """
-#     return amplitude * uncertainties.math.cos(theta) + monopole
-# 
-# 
-# uncertainty_dipole_monopole = uncertainties.wrap(dipole_monopole)
-# uncertainty_dipole_monopole2 = uncertainties.wrap(dipole_monopole2)
 # 
 # # print "Test 6:", dipole_monopole(AMPLITUDE.nominal_value, theta(DIPOLE_RA.nominal_value, DIPOLE_DEC.nominal_value, qso=QSO_POSITION), MONOPOLE.nominal_value)
 # # print "Test 7:", uncertainty_dipole_monopole(AMPLITUDE.nominal_value, \
