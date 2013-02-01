@@ -1,0 +1,2 @@
+include LICENSE
+recursive-include doc *.rst conf.py make.bat Makefile

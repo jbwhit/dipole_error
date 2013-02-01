@@ -1,0 +1,107 @@
+# Documentation notes: 
+
+make html
+make latex
+
+# where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
+
+MyModule/
+--README
+--doc
+--multi
+  --__init__.py
+  --myclass.py
+--single.py
+--script1
+
+
+
+
+
+
+get nose and coverage
+
+nosetests --verbose --with-coverage test/test1.py
+
+SLOCCount
+http://www.dwheeler.com/sloccount/sloccount.html
+
+
+Jenkins:
+# navigate to: 
+# http://localhost:8080/
+# sudo launchctl unload /Library/LaunchDaemons/org.jenkins-ci.plist
+
+Violations 
+  pylint
+  Clone Digger
+
+SLOCCount
+  Sloccount
+
+xUnit
+  Unit tests
+  
+Cobertura
+  Coverage
+  
+
+install: 
+git plugin
+git parameter plugin
+Cobertura
+Violations
+SLOCCount
+xUnit
+
+
+
+===================
+SourceTree
+File > New > Create Repository 
+location/new_repo_name
+double click -- git flow setup
+
+github
+create new repo
+git remote add origin https://github.com/jbwhit/dipole_error.git
+git push -u origin master
+
+
+Jenkins
+Job name: 
+Build a free-style software project
+
+rm -f pylint.log
+for f in `find -H . -name '*.py'`; do
+    pylint --output-format=parseable --reports=y $f >> pylint.log
+done || : 
+
+sloccount --duplicates --wide --details . > sloccount.sc || : 
+
+
+find -H . -name 'test*.py'|xargs nosetests --with-xunit --verbose --with-xcoverage || : 
+nosetests.xml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
