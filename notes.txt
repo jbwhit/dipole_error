@@ -1,5 +1,9 @@
 # Documentation notes: 
 
+# 2013-02-07 how to build and upload:
+# python setup.py build sdist upload
+
+
 make html
 make latex
 
@@ -13,9 +17,6 @@ MyModule/
   --myclass.py
 --single.py
 --script1
-
-
-
 
 
 

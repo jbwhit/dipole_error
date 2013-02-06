@@ -1,10 +1,33 @@
 #!/usr/bin/env python
-"""Calculates the expected $\Delta \alpha/\alpha$ from the King, et al. (2012) and error estimate. Section 5.3.
+"""Calculates an approximation of the expected $\Delta \alpha/\alpha$ models from the King, et al. (2012). 
 
+It also can calculate the expected error of these predictions with some caveats.
+
+# =====================
+# = Important caveats =
+# =====================
+
+The asymmetric 1-sigma error bars are reported, but without a precise functional form of the asymmetric error, 
+it's impossible to model the propogation of errors exactly. 
+
+Though there may be better ways, this program handles this case by assuming a symmetric error that is the average 
+of the asymmetric errors. For example, if the amplitude error is given by an asymmetric error range of:
+Error: +(22)/-(20)
+We take the average, and so +/- 21. It should be noted that when it's "close" to symmetric, this average approach 
+should be fairly "close" to the right answer. In all of the cases included, the error have been "close" to symmetric.
+
+If that is not acceptable, be warned that 
+
+# ==============
+# = References =
+# ==============
 King, J.A., Webb, J.K., Murphy, M.T., Flambaum, V.V., Carswell, R.F., Bainbridge, M.B., Wilczynska, M.R., Koch, F.E., 
-Spatial variation in the fine-structure constant - new results from VLT/UVES, 
+Spatial variation in the fine-structure constant -- new results from VLT/UVES, 
 Monthly Notices of the Royal Astronomical Society, 422, 3370-3414. (2012)
 
+# ================
+# = Dependencies =
+# ================
 Requires the use of two very handy python packages: angles and uncertainties.
 """
 try:
@@ -12,18 +35,23 @@ try:
 except:
     print """python package ''angles'' is required. Try running: 
     $ sudo pip install -U angles"""
-    raise 
+    raise ImportError
 try:
     import uncertainties
 except:
     print """python package ''uncertainties'' is required. Try running: 
     $ sudo pip install -U uncertainties"""
-    raise 
+    raise ImportError
 from uncertainties import umath
+import numpy as np
 
 # Define exceptions
 class DipoleError(Exception): 
     pass
+
+class NegativeError(Exception):
+    pass
+
 
 # Some default starting points on the sky to consider
 QSO_RA = "22h20m06.757" # RA
@@ -101,7 +129,56 @@ def dipole_monopole(right_ascension=QSO_RA, \
     :type amplitude: uncertainties.AffineScalarFunc
     :param monopole: Monopole term (optional with uncertainty via uncertainties.ufloat((value, error)) ).
     :type monopole: uncertainties.AffineScalarFunc
-    returns
+    :returns: value of predicted dipole (and error) at right_ascension and declination away from dipole 
+        that is located at dipole_ra, dipole_dec.
+    :rtype: number
+    
+    Examples:
+    
+    >>> import uncertainties
+    >>> import angles
+    >>> import dipole_error
+    >>> QSO_RA = "22h20m06.757" # RA
+    >>> QSO_DEC = "-28d03m23.34" # DEC
+    >>> 
+    >>> DIP_RA = 17.3
+    >>> DIP_RA_ERR = 1.0
+    >>> DIP_DEC = -61.0
+    >>> DIP_DEC_ERR = 10.0
+    >>> DIP_AMPLITUDE = 0.97e-5
+    >>> DIP_AMPLITUDE_ERR = 0.21e-5 # average of asymmetric errors
+    >>> DIP_MONOPOLE = -0.178e-5
+    >>> DIP_MONOPOLE_ERR  = 0.084e-5
+    >>> 
+    >>> # Values and errors combined for uncertainties package.
+    >>> DIPOLE_AMPLITUDE = uncertainties.ufloat((DIP_AMPLITUDE, DIP_AMPLITUDE_ERR))
+    >>> MONOPOLE = uncertainties.ufloat((DIP_MONOPOLE, DIP_MONOPOLE_ERR))
+    >>> DIPOLE_RA = uncertainties.ufloat((DIP_RA, DIP_RA_ERR))
+    >>> DIPOLE_DEC = uncertainties.ufloat((DIP_DEC, DIP_DEC_ERR))
+    >>> 
+    >>> # Default values
+    >>> dipole_error.dipole_monopole()
+    >>> # Output: 3.2473977827498827e-06+/-1.7321859627814845e-06
+    >>> 
+    >>> # An example of passing values 
+    >>> dipole_error.dipole_monopole(right_ascension=QSO_RA, \
+                        declination=QSO_DEC, \
+                        dipole_ra=DIPOLE_RA, \
+                        dipole_dec=DIPOLE_DEC, \
+                        amplitude=uncertainties.ufloat((DIP_AMPLITUDE, 2.0e-5)), \
+                        monopole=MONOPOLE)
+    >>> # Output: 3.2473977827498827e-06+/-1.0452990028326314e-05
+    >>> # Or by hand
+    >>> dipole_error.dipole_monopole(\
+    >>>             right_ascension="22h20m06.757", \
+    >>>             declination="-28d03m23.34", \
+    >>>             dipole_ra=uncertainties.ufloat((17.3, 1.0)), \
+    >>>             dipole_dec=uncertainties.ufloat((-61.0, 10.0)), \
+    >>>             amplitude=uncertainties.ufloat((0.97e-5, 0.21e-5)), \
+    >>>             monopole=uncertainties.ufloat((-0.178e-5, 0.084e-5)),\
+    >>>             )
+    >>> # Output: 3.2473977827498827e-06+/-1.7321859627814845e-06
+    
     """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
     return wrap_dipole_monopole(amplitude, \
@@ -180,10 +257,15 @@ def z_dipole_monopole(right_ascension=QSO_RA, \
     :type dipole_dec: uncertainties.AffineScalarFunc
     :param prefactor: Prefactor term of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
     :type prefactor: uncertainties.AffineScalarFunc
-    
+    :param z_redshift: Redshift of absorber in sky.
+    :type z_redshift: number
+    :param beta: power law exponent.
+    :type beta: number
     :param monopole: Monopole term (optional with uncertainty via uncertainties.ufloat((value, error)) ).
     :type monopole: uncertainties.AffineScalarFunc
-    returns
+    :returns: value of predicted dipole (and error) at right_ascension and declination away from dipole 
+        that is located at dipole_ra, dipole_dec.
+    :rtype: number
     """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
     return wrap_z_dipole_monopole(prefactor, \
@@ -272,8 +354,87 @@ def r_dipole_monopole(right_ascension=QSO_RA, \
                                            pos1.delta.r), \
                                   monopole)
 
+# ==============================
+# = Significance of difference =
+# ==============================
+def prediction_measurement_significance(measurement, \
+                                        measurement_statistical_error, \
+                                        measurement_systematic_error, \
+                                        prediction, \
+                                        prediction_statistical_error, \
+                                        verbose=True, \
+                                        ):
+    """Compares a measurement measurement statistical and systematic error with a prediction with statistical error.
+    """
+    total_statistical_error = np.sqrt(measurement_statistical_error ** 2 + prediction_statistical_error ** 2)
+    measurement_prediction_difference = np.abs(prediction - measurement)
+    statistical_deviation = measurement_prediction_difference / total_statistical_error
+    if verbose==True:
+        print "Measurement +/- (stat) +/- (sys): ", \
+            measurement, "+/-", measurement_statistical_error, "+/-", measurement_systematic_error
+        print "Prediction +/- (stat): ", prediction, "+/-", prediction_statistical_error
+        print 
+    if statistical_deviation <= 1.0 and measurement_systematic_error == 0:
+        print "within 1 sigma"
+        return measurement_prediction_difference / total_statistical_error
+    else:
+        # statistical_deviation = measurement_prediction_difference / total_statistical_error
+        # [measurement + measurement_systematic_error, measurement - measurement_systematic_error]
+        # print 
+        # "From max() to min() sigma away."
+        pass
+
+def statistical_difference(measurement_one_and_error, \
+                           measurement_two_and_error, \
+                            ):
+    """Compares two values with statistical errors to give an overall ``statistical'' separation."""
+
+    if (type(measurement_one_and_error) != uncertainties.Variable) or \
+        (type(measurement_two_and_error) != uncertainties.Variable): 
+        print "Use uncertainties python package"
+    measurement_one = measurement_one_and_error.nominal_value
+    measurement_two = measurement_two_and_error.nominal_value
+    measurement_one_error = measurement_one_and_error.std_dev()
+    measurement_two_error = measurement_two_and_error.std_dev()
+    total_statistical_error = np.sqrt(measurement_one_error ** 2 + measurement_two_error ** 2)
+    measurement_prediction_difference = np.abs(measurement_one - measurement_two)
+    return measurement_prediction_difference / total_statistical_error
+    
+def statistical_difference_systematic(measurement_one_and_error, \
+                                      measurement_two_and_error, \
+                                      systematic_error=0,\
+                                       ):
+    """Describe the range using statistical difference."""
+    if systematic_error < 0:
+        raise NegativeError('x is less than zero')
+
+    measurement_one = measurement_one_and_error.nominal_value
+    measurement_two = measurement_two_and_error.nominal_value
+    measurement_one_error = measurement_one_and_error.std_dev()
+    measurement_two_error = measurement_two_and_error.std_dev()
+    total_statistical_error = np.sqrt(measurement_one_error ** 2 + measurement_two_error ** 2)
+    measurement_prediction_difference = np.abs(measurement_one - measurement_two)
+    extreme_list = np.abs([measurement_one - measurement_two - x for x in [systematic_error, -systematic_error]])
+    minimum = np.min(extreme_list)
+    maximum = np.max(extreme_list)
+    if np.any(measurement_one - systematic_error <= measurement_two <= measurement_one + systematic_error):
+        minimum = 0.0
+    return minimum / total_statistical_error, maximum / total_statistical_error
+
+def report_stat_difference(measurement_one_and_error=dipole_monopole(), \
+                           measurement_two_and_error=uncertainties.ufloat((-1.09e-6, 2.35e-6)), \
+                           systematic_error=1.65e-6,\
+                           round_places=5, \
+                           ):
+    """Docstring"""
+    minimum, maximum = statistical_difference_systematic(measurement_one_and_error, measurement_two_and_error, systematic_error)
+    print "Between", round(minimum, round_places), "and", round(maximum, round_places), "sigma away."
+    return
+
+# ============================
+# = Monte Carlo Verification =
+# ============================
 
 # TODO: monte carlo verification of these calculations
 # TODO: verbose version of these
-# TODO: Systematic error and statistical error considerations
-# TODO: unit testing
+# TODO: add usage example to docstrings
