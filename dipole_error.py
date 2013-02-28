@@ -3,9 +3,8 @@
 
 It also can calculate the expected error of these predictions with some caveats.
 
-# =====================
-# = Important caveats =
-# =====================
+Important caveats
+=====================
 
 The asymmetric 1-sigma error bars are reported, but without a precise functional form of the asymmetric error, 
 it's impossible to model the propogation of errors exactly. 
@@ -18,16 +17,16 @@ should be fairly "close" to the right answer. In all of the cases included, the 
 
 If that is not acceptable, be warned that 
 
-# ==============
-# = References =
-# ==============
+
+References 
+============
 King, J.A., Webb, J.K., Murphy, M.T., Flambaum, V.V., Carswell, R.F., Bainbridge, M.B., Wilczynska, M.R., Koch, F.E., 
 Spatial variation in the fine-structure constant -- new results from VLT/UVES, 
 Monthly Notices of the Royal Astronomical Society, 422, 3370-3414. (2012)
 
-# ================
-# = Dependencies =
-# ================
+
+Dependencies
+================
 Requires the use of two very handy python packages: angles and uncertainties.
 """
 try:
@@ -52,6 +51,7 @@ class DipoleError(Exception):
 class NegativeError(Exception):
     pass
 
+__version__ = 1.1.0
 
 # Some default starting points on the sky to consider
 QSO_RA = "22h20m06.757" # RA
@@ -117,9 +117,9 @@ def dipole_monopole(right_ascension=QSO_RA, \
     This equation propogates the relevant errors through the dipole equation, returns value and error estimate.
     
     Arguments:
-    :param right_ascension:right ascension of point in sky under consideration. 
+    :param right_ascension:right ascension of point in sky under consideration. Has to be in the format: "11h03m25.29"
     :type right_ascension: number
-    :param declination: declination of point in sky under consideration.
+    :param declination: declination of point in sky under consideration. Has to be in the format: "-26d45m15.8""
     :type declination: number
     :param dipole_ra: RA of dipole (optional with uncertainty via uncertainties.ufloat((value, error)) ).
     :type dipole_ra: uncertainties.AffineScalarFunc
@@ -181,6 +181,9 @@ def dipole_monopole(right_ascension=QSO_RA, \
     
     """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+    if verbose == True:
+        print "Sky position: ", pos1
+        print "Dipole position: ", 
     return wrap_dipole_monopole(amplitude, \
                                 wrap_sep(wrap_radian_RA(dipole_ra), \
                                          wrap_radian_DEC(dipole_dec), \
@@ -436,5 +439,3 @@ def report_stat_difference(measurement_one_and_error=dipole_monopole(), \
 # ============================
 
 # TODO: monte carlo verification of these calculations
-# TODO: verbose version of these
-# TODO: add usage example to docstrings
