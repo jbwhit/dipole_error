@@ -179,9 +179,6 @@ def dipole_monopole(right_ascension=QSO_RA, \
     
     """
     pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
-    if verbose == True:
-        print "Sky position: ", pos1
-        print "Dipole position: ", 
     return wrap_dipole_monopole(amplitude, \
                                 wrap_sep(wrap_radian_RA(dipole_ra), \
                                          wrap_radian_DEC(dipole_dec), \
