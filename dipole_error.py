@@ -51,8 +51,6 @@ class DipoleError(Exception):
 class NegativeError(Exception):
     pass
 
-__version__ = 1.1.0
-
 # Some default starting points on the sky to consider
 QSO_RA = "22h20m06.757" # RA
 QSO_DEC = "-28d03m23.34" # DEC
