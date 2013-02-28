@@ -1,9 +1,7 @@
 from distutils.core import setup
 
-execfile('version.py')
-
 setup(name="dipole_error",
-      version=__version__,
+      version='1.1.2',
       description="Calculate the predicted dipole value and error for given input.",
       py_modules=['dipole_error'],
       author='Jonathan Whitmore',
