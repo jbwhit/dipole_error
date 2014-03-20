@@ -79,10 +79,10 @@ DIP_MONOPOLE = -0.178e-5
 DIP_MONOPOLE_ERR  = 0.084e-5
 
 # Values and errors combined for uncertainties package.
-DIPOLE_AMPLITUDE = uncertainties.ufloat((DIP_AMPLITUDE, DIP_AMPLITUDE_ERR))
-MONOPOLE = uncertainties.ufloat((DIP_MONOPOLE, DIP_MONOPOLE_ERR))
-DIPOLE_RA = uncertainties.ufloat((DIP_RA, DIP_RA_ERR))
-DIPOLE_DEC = uncertainties.ufloat((DIP_DEC, DIP_DEC_ERR))
+DIPOLE_AMPLITUDE = uncertainties.ufloat(DIP_AMPLITUDE, DIP_AMPLITUDE_ERR)
+MONOPOLE = uncertainties.ufloat(DIP_MONOPOLE, DIP_MONOPOLE_ERR)
+DIPOLE_RA = uncertainties.ufloat(DIP_RA, DIP_RA_ERR)
+DIPOLE_DEC = uncertainties.ufloat(DIP_DEC, DIP_DEC_ERR)
 
 def basic_dipole_monopole(amplitude=DIP_AMPLITUDE, \
                           theta=THETA, \
@@ -202,11 +202,11 @@ Z_DIP_MONOPOLE_ERR = 0.085e-5
 Z_DIP_BETA = 0.46
 Z_DIP_BETA_ERR = 0.49
 
-Z_DIPOLE_RA = uncertainties.ufloat((Z_DIP_RA, Z_DIP_RA_ERR))
-Z_DIPOLE_DEC = uncertainties.ufloat((Z_DIP_DEC, Z_DIP_DEC_ERR))
-Z_DIPOLE_PREFACTOR = uncertainties.ufloat((Z_DIP_PREFACTOR, Z_DIP_PREFACTOR_ERR))
-Z_DIPOLE_MONOPOLE = uncertainties.ufloat((Z_DIP_MONOPOLE, Z_DIP_MONOPOLE_ERR))
-Z_DIPOLE_BETA = uncertainties.ufloat((Z_DIP_BETA, Z_DIP_BETA_ERR))
+Z_DIPOLE_RA = uncertainties.ufloat(Z_DIP_RA, Z_DIP_RA_ERR)
+Z_DIPOLE_DEC = uncertainties.ufloat(Z_DIP_DEC, Z_DIP_DEC_ERR)
+Z_DIPOLE_PREFACTOR = uncertainties.ufloat(Z_DIP_PREFACTOR, Z_DIP_PREFACTOR_ERR)
+Z_DIPOLE_MONOPOLE = uncertainties.ufloat(Z_DIP_MONOPOLE, Z_DIP_MONOPOLE_ERR)
+Z_DIPOLE_BETA = uncertainties.ufloat(Z_DIP_BETA, Z_DIP_BETA_ERR)
 
 def basic_z_dipole_monopole(prefactor=Z_DIP_PREFACTOR, \
                             z_redshift=REDSHIFT, \
@@ -290,10 +290,10 @@ R_DIP_MONOPOLE = -0.187e-5
 R_DIP_MONOPOLE_ERR  = 0.084e-5
 
 # Uncertainties
-R_DIPOLE_AMPLITUDE = uncertainties.ufloat((R_DIP_AMPLITUDE, R_DIP_AMPLITUDE_ERR))
-R_DIPOLE_MONOPOLE = uncertainties.ufloat((R_DIP_MONOPOLE, R_DIP_MONOPOLE_ERR))
-R_DIPOLE_RA = uncertainties.ufloat((R_DIP_RA, R_DIP_RA_ERR))
-R_DIPOLE_DEC = uncertainties.ufloat((R_DIP_DEC, R_DIP_DEC_ERR))
+R_DIPOLE_AMPLITUDE = uncertainties.ufloat(R_DIP_AMPLITUDE, R_DIP_AMPLITUDE_ERR)
+R_DIPOLE_MONOPOLE = uncertainties.ufloat(R_DIP_MONOPOLE, R_DIP_MONOPOLE_ERR)
+R_DIPOLE_RA = uncertainties.ufloat(R_DIP_RA, R_DIP_RA_ERR)
+R_DIPOLE_DEC = uncertainties.ufloat(R_DIP_DEC, R_DIP_DEC_ERR)
 
 def basic_r_dipole_monopole(amplitude=R_DIPOLE_AMPLITUDE,\
                             radial_distance=RADIAL_DISTANCE,\
@@ -392,8 +392,8 @@ def statistical_difference(measurement_one_and_error, \
         print "Use uncertainties python package"
     measurement_one = measurement_one_and_error.nominal_value
     measurement_two = measurement_two_and_error.nominal_value
-    measurement_one_error = measurement_one_and_error.std_dev()
-    measurement_two_error = measurement_two_and_error.std_dev()
+    measurement_one_error = measurement_one_and_error.std_dev
+    measurement_two_error = measurement_two_and_error.std_dev
     total_statistical_error = np.sqrt(measurement_one_error ** 2 + measurement_two_error ** 2)
     measurement_prediction_difference = np.abs(measurement_one - measurement_two)
     return measurement_prediction_difference / total_statistical_error
@@ -408,8 +408,8 @@ def statistical_difference_systematic(measurement_one_and_error, \
 
     measurement_one = measurement_one_and_error.nominal_value
     measurement_two = measurement_two_and_error.nominal_value
-    measurement_one_error = measurement_one_and_error.std_dev()
-    measurement_two_error = measurement_two_and_error.std_dev()
+    measurement_one_error = measurement_one_and_error.std_dev
+    measurement_two_error = measurement_two_and_error.std_dev
     total_statistical_error = np.sqrt(measurement_one_error ** 2 + measurement_two_error ** 2)
     measurement_prediction_difference = np.abs(measurement_one - measurement_two)
     extreme_list = np.abs([measurement_one - measurement_two - x for x in [systematic_error, -systematic_error]])
@@ -420,7 +420,7 @@ def statistical_difference_systematic(measurement_one_and_error, \
     return minimum / total_statistical_error, maximum / total_statistical_error
 
 def report_stat_difference(measurement_one_and_error=dipole_monopole(), \
-                           measurement_two_and_error=uncertainties.ufloat((-1.09e-6, 2.35e-6)), \
+                           measurement_two_and_error=uncertainties.ufloat(-1.09e-6, 2.35e-6), \
                            systematic_error=1.65e-6,\
                            round_places=5, \
                            ):
