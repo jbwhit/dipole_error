@@ -178,7 +178,9 @@ def dipole_monopole(right_ascension=QSO_RA, \
     >>> # Output: 3.2473977827498827e-06+/-1.7321859627814845e-06
     
     """
-    pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+# MTM 2015-02-09: Modified input for angles version 2
+#    pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+    pos1 = angles.AngularPosition.from_hd(hd=right_ascension+" "+declination)
     return wrap_dipole_monopole(amplitude, \
                                 wrap_sep(wrap_radian_RA(dipole_ra), \
                                          wrap_radian_DEC(dipole_dec), \
@@ -265,7 +267,9 @@ def z_dipole_monopole(right_ascension=QSO_RA, \
         that is located at dipole_ra, dipole_dec.
     :rtype: number
     """
-    pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+# MTM 2015-02-09: Modified input for angles version 2
+#    pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+    pos1 = angles.AngularPosition.from_hd(hd=right_ascension+" "+declination)
     return wrap_z_dipole_monopole(prefactor, \
                                   z_redshift, \
                                   beta, \
@@ -343,7 +347,9 @@ def r_dipole_monopole(right_ascension=QSO_RA, \
     :type monopole: uncertainties.AffineScalarFunc
     returns
     """
-    pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+# MTM 2015-02-09: Modified input for angles version 2
+#    pos1 = angles.AngularPosition(alpha=right_ascension, delta=declination)
+    pos1 = angles.AngularPosition.from_hd(hd=right_ascension+" "+declination)
     return wrap_r_dipole_monopole(amplitude, \
                                   radial_distance, \
                                   wrap_sep(wrap_radian_RA(dipole_ra), \

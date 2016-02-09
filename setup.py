@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name="dipole_error",
-      version='1.1.3',
+      version='2.0.0',
       description="Calculate the predicted dipole value and error for given input.",
       py_modules=['dipole_error'],
       author='Jonathan Whitmore',
@@ -13,4 +13,4 @@ setup(name="dipole_error",
       # long_description
       # classifiers?
       # install_requires = ["angles", "uncertainties"],
-      
+
